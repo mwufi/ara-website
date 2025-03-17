@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { DraggableContainer, DraggableImage } from "@/components/DraggableImages";
 
 export default function Home() {
   const [showEmailInput, setShowEmailInput] = useState(false);
@@ -29,11 +30,41 @@ export default function Home() {
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
         {/* Hero header section */}
         <div className="text-center sm:text-left mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">What's on your mind today?</h1>
           <p className="text-xl text-gray-600 dark:text-gray-300">We make your computer come to life</p>
+        </div>
+
+        {/* Draggable images scattered across the page */}
+        <div className="w-full mb-8">
+          <h2 className="text-xl font-semibold mb-6 text-center">Drag these anywhere!</h2>
+          <DraggableContainer height={400}>
+            <DraggableImage
+              src="/car.png"
+              alt="Red sports car"
+              size={150}
+              initialX={100}
+              initialY={100}
+              rotation={-3}
+            />
+            <DraggableImage
+              src="/computer.png"
+              alt="computer in a field of flowers"
+              size={180}
+              initialX={350}
+              initialY={150}
+              rotation={5}
+            />
+            <DraggableImage
+              src="/heart.png"
+              alt="heart"
+              size={130}
+              initialX={600}
+              initialY={200}
+            />
+          </DraggableContainer>
         </div>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
