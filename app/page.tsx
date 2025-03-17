@@ -49,30 +49,41 @@ export default function Home() {
             </Link>
           </motion.div>
 
-          <div className="relative">
-            <AnimatePresence mode="wait">
+          {/* Fixed size container to prevent layout shifts */}
+          <div className="relative h-12 min-w-[158px] md:min-w-[350px] flex justify-center sm:justify-start">
+            <AnimatePresence mode="sync">
               {!showEmailInput ? (
                 <motion.button
                   key="early-access-button"
                   onClick={handleEarlyAccessClick}
-                  className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px] whitespace-nowrap"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="absolute rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-[158px] whitespace-nowrap"
+                  initial={{ x: 0 }}
+                  animate={{ x: 0 }}
+                  exit={{ x: -40, scale: 0.2, opacity: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                    opacity: { duration: 0.2 }
+                  }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   Get Early Access
                 </motion.button>
-              ) : (
+              ) : null}
+
+              {showEmailInput && (
                 <motion.div
                   key="email-form-container"
-                  className="flex items-center gap-2"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="absolute flex items-center gap-2"
+                  initial={{ x: 40, scale: 0.8 }}
+                  animate={{ x: 0, scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30
+                  }}
                 >
                   <motion.button
                     type="button"
@@ -90,7 +101,7 @@ export default function Home() {
                     className="flex items-center"
                     initial={{ width: 0 }}
                     animate={{ width: "auto" }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
                     <input
                       type="email"
