@@ -13,11 +13,10 @@ interface MessageBubbleProps {
 function MessageBubble({ role, content }: MessageBubbleProps) {
     return (
         <div
-            className={`max-w-[80%] px-4 py-2 rounded-lg ${
-                role === 'user'
-                    ? 'bg-blue-500 text-white rounded-br-none'
-                    : 'bg-gray-200 text-gray-800 rounded-bl-none'
-            }`}
+            className={`max-w-[80%] px-4 py-2 rounded-lg ${role === 'user'
+                ? 'bg-blue-500 text-white rounded-br-none'
+                : 'bg-gray-200 text-gray-800 rounded-bl-none'
+                }`}
         >
             {content}
         </div>
@@ -27,6 +26,7 @@ function MessageBubble({ role, content }: MessageBubbleProps) {
 export default function ChatPage() {
     const { messages, input, handleInputChange, handleSubmit, isLoading, reload } = useChat()
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const inputRef = useRef<HTMLInputElement>(null)
     const [isSending, setIsSending] = useState(false)
 
     // Auto scroll to the bottom when new messages arrive
@@ -34,8 +34,20 @@ export default function ChatPage() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
         if (messages.length > 0 && isLoading === false) {
             setIsSending(false)
+            // Focus the input field after message is sent with a longer delay
+            setTimeout(() => {
+                inputRef.current?.focus()
+            }, 100)
         }
     }, [messages, isLoading])
+
+    // Focus input field on initial load
+    useEffect(() => {
+        // Focus with a slight delay to ensure the component is fully mounted
+        setTimeout(() => {
+            inputRef.current?.focus()
+        }, 100)
+    }, [])
 
     // Custom submit handler to show sending state
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -100,8 +112,8 @@ export default function ChatPage() {
                                             return (
                                                 <div key={toolCallId} className="flex flex-col gap-1 w-full">
                                                     {result.messages.map((msg: string, i: number) => (
-                                                        <MessageBubble 
-                                                            key={i} 
+                                                        <MessageBubble
+                                                            key={i}
                                                             role="assistant"
                                                             content={msg}
                                                         />
@@ -146,12 +158,12 @@ export default function ChatPage() {
                 className="border-t p-4 flex items-center space-x-2"
             >
                 <input
+                    ref={inputRef}
                     type="text"
                     value={input}
                     onChange={handleInputChange}
                     placeholder="Type your message..."
                     className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    disabled={isLoading || isSending}
                 />
                 <button
                     type="submit"
