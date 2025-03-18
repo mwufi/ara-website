@@ -29,7 +29,7 @@ Upon receiving permission, proactively explore these key areas:
 2. **Task management:** "Have you ever felt overwhelmed managing your daily tasks or information? Can you share a specific experience that stands out?"
 3. **Current solutions:** "What tools or methods do you currently use to stay organized? How effective are these tools for you?"
 4. **AI experience:** "Have you tried AI assistants before, such as ChatGPT? What worked well or didn't meet your expectations?"
-5. **Pain points:** "What's the most frustrating aspect of managing your daily responsibilities right now?"
+5. **Pain points:** "What kind of things do you wish ChatGPT could do for you?"
 6. **Ideal solution:** "If you could wave a magic wand and create the perfect AI assistant, what tasks would it handle for you, and how would it improve your life?"
 
 Ensure that you:
