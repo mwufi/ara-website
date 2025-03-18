@@ -13,7 +13,7 @@ interface MessageBubbleProps {
 function MessageBubble({ role, content }: MessageBubbleProps) {
     return (
         <div
-            className={`max-w-[80%] px-4 py-2 rounded-lg ${role === 'user'
+            className={`max-w-[80%] px-4 py-2 rounded-lg whitespace-pre-wrap ${role === 'user'
                 ? 'bg-blue-500 text-white rounded-br-none'
                 : 'bg-gray-200 text-gray-800 rounded-bl-none'
                 }`}
@@ -50,9 +50,12 @@ export default function ChatPage() {
     }, [])
 
     // Custom submit handler to show sending state
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
+        if (e) {
+            e.preventDefault()
+        }
         setIsSending(true)
-        handleSubmit(e)
+        handleSubmit(e as React.FormEvent<HTMLFormElement>)
     }
 
     // Clear chat history
@@ -107,7 +110,7 @@ export default function ChatPage() {
                                                 </div>
                                             );
                                         }
-                                        if (toolName === 'textMessage') {
+                                        if (toolName === 'responseTool') {
                                             const { result } = toolInvocation;
                                             return (
                                                 <div key={toolCallId} className="flex flex-col gap-1 w-full">
@@ -118,6 +121,22 @@ export default function ChatPage() {
                                                             content={msg}
                                                         />
                                                     ))}
+                                                    {result.options && (
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {result.options.map((option: string, i: number) => (
+                                                                <button 
+                                                                    key={i} 
+                                                                    className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        handleInputChange({ target: { value: option } } as any);
+                                                                    }}
+                                                                >
+                                                                    {option}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             );
                                         }
