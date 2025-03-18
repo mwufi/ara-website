@@ -15,8 +15,11 @@ function MessageBubble({ role, content }: MessageBubbleProps) {
         <div
             className={`max-w-[80%] px-4 py-2 rounded-lg whitespace-pre-wrap ${role === 'user'
                 ? 'bg-blue-500 text-white rounded-br-none'
-                : 'bg-gray-200 text-gray-800 rounded-bl-none'
+                : 'bg-gray-100 text-gray-800 rounded-bl-none'
                 }`}
+            style={{
+                fontSize: '15px'
+            }}
         >
             {content}
         </div>
