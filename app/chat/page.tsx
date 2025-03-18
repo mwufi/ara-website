@@ -27,20 +27,25 @@ function MessageBubble({ role, content }: MessageBubbleProps) {
 }
 
 export default function ChatPage() {
-    const { messages, input, handleInputChange, handleSubmit, isLoading, reload } = useChat()
+    const { messages, setMessages, input, setInput, handleInputChange, handleSubmit, isLoading, stop, reload } = useChat()
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
-    const [isSending, setIsSending] = useState(false)
+    const [isPseudoLoading, setIsPseudoLoading] = useState(false)
 
     // Auto scroll to the bottom when new messages arrive
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
         if (messages.length > 0 && isLoading === false) {
-            setIsSending(false)
             // Focus the input field after message is sent with a longer delay
             setTimeout(() => {
                 inputRef.current?.focus()
             }, 100)
+        }
+        if (isPseudoLoading && isLoading === false) {
+            // If the last message is from the assistant, remove it
+            if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
+                setIsPseudoLoading(false)
+            }
         }
     }, [messages, isLoading])
 
@@ -52,12 +57,46 @@ export default function ChatPage() {
         }, 100)
     }, [])
 
+    useEffect(() => {
+        console.log('messages', messages)
+    }, [messages])
+
     // Custom submit handler to show sending state
     const onSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
         if (e) {
             e.preventDefault()
         }
-        setIsSending(true)
+
+        // Set a new debounce timer
+        console.log('onSubmit', inputRef.current?.value)
+        if (isLoading || (messages.length > 0 && messages[messages.length - 1].role === 'user')) {
+            // Append current input to the last user message
+            setMessages(prevMessages => {
+                const lastUserMessageIndex = [...prevMessages].reverse().findIndex(m => m.role === 'user');
+                if (lastUserMessageIndex === -1) return prevMessages;
+
+                const actualIndex = prevMessages.length - 1 - lastUserMessageIndex;
+                return prevMessages.map((msg, i) => {
+                    if (i === actualIndex) {
+                        return {
+                            ...msg,
+                            content: msg.content + '\n' + (inputRef.current?.value || ''),
+                            parts: msg.parts?.map((part: any) => ({
+                                ...part,
+                                text: part.text + '\n' + (inputRef.current?.value || '')
+                            }))
+                        };
+                    }
+                    return msg;
+                });
+            });
+            setIsPseudoLoading(true)
+            stop()
+            setInput('')
+            reload()
+            return;
+        }
+
         handleSubmit(e as React.FormEvent<HTMLFormElement>)
     }
 
@@ -127,8 +166,8 @@ export default function ChatPage() {
                                                     {result.options && (
                                                         <div className="flex flex-wrap gap-2">
                                                             {result.options.map((option: string, i: number) => (
-                                                                <button 
-                                                                    key={i} 
+                                                                <button
+                                                                    key={i}
                                                                     className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
                                                                     onClick={(e) => {
                                                                         e.preventDefault();
@@ -161,7 +200,7 @@ export default function ChatPage() {
                 )}
 
                 {/* Typing indicator */}
-                {isLoading && (
+                {(isPseudoLoading || isLoading) && (
                     <div className="flex justify-start">
                         <div className="bg-gray-200 px-4 py-2 rounded-lg rounded-bl-none flex items-center space-x-1">
                             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
@@ -189,14 +228,10 @@ export default function ChatPage() {
                 />
                 <button
                     type="submit"
-                    disabled={isLoading || isSending || !input.trim()}
+                    disabled={!input.trim()}
                     className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {isSending ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                        <Send className="h-5 w-5" />
-                    )}
+                    <Send className="h-5 w-5" />
                 </button>
             </form>
         </div>
